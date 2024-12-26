@@ -17,6 +17,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden; /* Prevent scrollbars */
         }
 
         #unity-container {
@@ -26,13 +27,13 @@
             justify-content: center;
             position: relative;
             width: 100%;
-            max-width: 960px;
+            height: 100%;
         }
 
         #unity-canvas {
             display: block;
-            width: 550px;
-            height: 960px;
+            width: 100%;
+            height: 100%;
         }
 
         /* Loading bar styles */
@@ -71,7 +72,6 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            display: none; /* Hidden by default */
         }
 
         #fullscreen-button:hover {
@@ -106,6 +106,15 @@
         const fullscreenButton = document.querySelector("#fullscreen-button");
         const unityLoadingBar = document.querySelector("#unity-loading-bar");
         const unityProgressBarFull = document.querySelector("#unity-progress-bar-full");
+
+        // Make the canvas fill the entire screen (without fullscreen mode)
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();  // Ensure canvas fills screen on load
 
         function unityShowBanner(msg, type) {
             const warningBanner = document.querySelector("#unity-warning");
@@ -147,9 +156,6 @@
             document.getElementsByTagName('head')[0].appendChild(meta);
             document.querySelector("#unity-container").className = "unity-mobile";
             canvas.className = "unity-mobile";
-        } else {
-            canvas.style.width = "550px";
-            canvas.style.height = "960px";
         }
 
         document.querySelector("#unity-loading-bar").style.display = "block";
@@ -162,6 +168,7 @@
             }).then((unityInstance) => {
                 unityLoadingBar.style.display = "none";
 
+                // Show fullscreen button when not in fullscreen
                 function updateFullscreenButton() {
                     if (document.fullscreenElement) {
                         fullscreenButton.style.display = "none";
