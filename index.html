@@ -7,19 +7,18 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
-        /* Ensure the body takes the full height */
+        /* General styles */
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
+            background-color: #2E2C2F; /* Background color */
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #000; /* Optional: Black background */
         }
 
-        /* Center the Unity container */
         #unity-container {
             display: flex;
             flex-direction: column;
@@ -30,7 +29,6 @@
             max-width: 960px;
         }
 
-        /* Style the canvas */
         #unity-canvas {
             display: block;
             width: 550px;
@@ -43,7 +41,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50%; /* Half the screen width */
+            width: 50%; /* Half of the screen */
         }
 
         #unity-progress-bar-empty {
@@ -58,20 +56,33 @@
         #unity-progress-bar-full {
             width: 0;
             height: 100%;
-            background-color: #4caf50;
+            background-color: #6948B9; /* Bar color */
             transition: width 0.3s ease;
         }
 
-        /* Footer and other elements */
+        /* Fullscreen button styles */
+        #fullscreen-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 15px;
+            background-color: #6948B9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+
+        #fullscreen-button:hover {
+            background-color: #5A3DA9;
+        }
+
+        /* Footer */
         #unity-footer {
             margin-top: 10px;
             text-align: center;
             color: white;
-        }
-
-        #unity-warning {
-            color: yellow;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -83,22 +94,25 @@
                 <div id="unity-progress-bar-full"></div>
             </div>
         </div>
+        <button id="fullscreen-button">Go Fullscreen</button>
         <div id="unity-warning"></div>
         <div id="unity-footer">
             <div id="unity-logo-title-footer"></div>
-            <div id="unity-fullscreen-button"></div>
             <div id="unity-build-title">CrashGames</div>
         </div>
     </div>
     <script>
-        var canvas = document.querySelector("#unity-canvas");
+        const canvas = document.querySelector("#unity-canvas");
+        const fullscreenButton = document.querySelector("#fullscreen-button");
+        const unityLoadingBar = document.querySelector("#unity-loading-bar");
+        const unityProgressBarFull = document.querySelector("#unity-progress-bar-full");
 
         function unityShowBanner(msg, type) {
-            var warningBanner = document.querySelector("#unity-warning");
+            const warningBanner = document.querySelector("#unity-warning");
             function updateBannerVisibility() {
                 warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
             }
-            var div = document.createElement('div');
+            const div = document.createElement('div');
             div.innerHTML = msg;
             warningBanner.appendChild(div);
             if (type == 'error') div.style = 'background: red; padding: 10px;';
@@ -112,9 +126,9 @@
             updateBannerVisibility();
         }
 
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/BuildCrashGame.loader.js";
-        var config = {
+        const buildUrl = "Build";
+        const loaderUrl = buildUrl + "/BuildCrashGame.loader.js";
+        const config = {
             arguments: [],
             dataUrl: buildUrl + "/BuildCrashGame.data",
             frameworkUrl: buildUrl + "/BuildCrashGame.framework.js",
@@ -127,7 +141,7 @@
         };
 
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            var meta = document.createElement('meta');
+            const meta = document.createElement('meta');
             meta.name = 'viewport';
             meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
             document.getElementsByTagName('head')[0].appendChild(meta);
@@ -140,16 +154,28 @@
 
         document.querySelector("#unity-loading-bar").style.display = "block";
 
-        var script = document.createElement("script");
+        const script = document.createElement("script");
         script.src = loaderUrl;
         script.onload = () => {
             createUnityInstance(canvas, config, (progress) => {
-                document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+                unityProgressBarFull.style.width = 100 * progress + "%";
             }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
+                unityLoadingBar.style.display = "none";
+
+                function updateFullscreenButton() {
+                    if (document.fullscreenElement) {
+                        fullscreenButton.style.display = "none";
+                    } else {
+                        fullscreenButton.style.display = "block";
+                    }
+                }
+
+                fullscreenButton.addEventListener("click", () => {
                     unityInstance.SetFullscreen(1);
-                };
+                });
+
+                document.addEventListener("fullscreenchange", updateFullscreenButton);
+                updateFullscreenButton(); // Initialize button state
             }).catch((message) => {
                 alert(message);
             });
