@@ -14,9 +14,10 @@
             height: 100%;
             width: 100%;
             background-color: #2E2C2F; /* Background color */
-            overflow: hidden; /* Prevent scrollbars */
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent scrollbars */
         }
 
         #unity-container {
@@ -26,14 +27,13 @@
             justify-content: center;
             position: relative;
             width: 100%;
-            height: calc(95%); /* Use 95% of the height */
-            margin-top: 5%; /* Leave 5% blank at the top */
+            height: 100%;
         }
 
         #unity-canvas {
             display: block;
             width: 100%;
-            height: 95%;
+            height: 100%;
         }
 
         /* Loading bar styles */
@@ -62,7 +62,7 @@
         }
 
         /* Fullscreen button styles */
-        /*        #fullscreen-button {
+        #fullscreen-button {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -76,7 +76,7 @@
 
             #fullscreen-button:hover {
                 background-color: #5A3DA9;
-            }*/
+            }
 
         /* Footer */
         #unity-footer {
@@ -94,7 +94,7 @@
                 <div id="unity-progress-bar-full"></div>
             </div>
         </div>
-        <!--<button id="fullscreen-button">Go Fullscreen</button>-->
+        <button id="fullscreen-button">Go Fullscreen</button>
         <div id="unity-warning"></div>
         <div id="unity-footer">
             <div id="unity-logo-title-footer"></div>
@@ -169,20 +169,20 @@
                 unityLoadingBar.style.display = "none";
 
                 // Show fullscreen button when not in fullscreen
-                //function updateFullscreenButton() {
-                //    if (document.fullscreenElement) {
-                //        fullscreenButton.style.display = "none";
-                //    } else {
-                //        fullscreenButton.style.display = "block";
-                //    }
-                //}
+                function updateFullscreenButton() {
+                    if (document.fullscreenElement) {
+                        fullscreenButton.style.display = "none";
+                    } else {
+                        fullscreenButton.style.display = "block";
+                    }
+                }
 
-                //fullscreenButton.addEventListener("click", () => {
-                //    unityInstance.SetFullscreen(1);
-                //});
+                fullscreenButton.addEventListener("click", () => {
+                    unityInstance.SetFullscreen(1);
+                });
 
-                //document.addEventListener("fullscreenchange", updateFullscreenButton);
-                //updateFullscreenButton(); // Initialize button state
+                document.addEventListener("fullscreenchange", updateFullscreenButton);
+                updateFullscreenButton(); // Initialize button state
             }).catch((message) => {
                 alert(message);
             });
